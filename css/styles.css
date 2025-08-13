@@ -4442,3 +4442,11 @@ body, p, li {
     margin-bottom: 2rem;
   }
 }
+
+@media (max-width: 700px) {
+  .proj__gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .proj__gallery--three { --thumb-h: 180px; }
+}
+
