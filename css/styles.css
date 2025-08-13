@@ -4731,7 +4731,7 @@ body, p, li {
 
 /* 3-up gallery: slimmer but tall tiles */
 .proj__gallery--three {
-  --thumb-h: 280px; /* height */
+   --thumb-h: 280px; /* height */
   display: grid;
   grid-template-columns: repeat(3, minmax(150px, 1fr)); /* ⬅️ thinner min width */
   gap: 1rem;
