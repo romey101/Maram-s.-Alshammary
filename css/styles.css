@@ -4349,13 +4349,13 @@ body, p, li {
   transition: transform .35s ease, box-shadow .35s ease;
 }
 
-.about-card img {
+/* .about-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transform: scale(1.02);
   transition: transform .45s ease;
-}
+} */
 
 .about-card:hover {
   transform: translateY(-4px);
@@ -4393,7 +4393,403 @@ body, p, li {
 #contact .contact-social li {
     margin-bottom: 5px;
 }
+/* ===== Compact project thumbnails (kills the giant iPhone height) ===== */
+
+/* 1) global height for each thumbnail tile */
+:root {
+  --proj-thumb-h: 180px;                 /* default thumbnail height */
+}
+
+/* 2) make a clean 3-up grid */
+.proj__gallery {
+  display: grid;                          /* use CSS grid layout */
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 equal columns */
+  gap: .9rem;                             /* spacing between images */
+  margin: var(--vspace-0_5) 0 var(--vspace-0_75); /* top/bottom breathing room */
+}
+
+/* 3) each tile is a fixed-height “mask” that clips tall screenshots */
+.proj__gallery figure {
+  height: var(--proj-thumb-h);            /* force consistent thumbnail height */
+  border-radius: 10px;                    /* rounded corners */
+  overflow: hidden;                       /* hide overflow (prevents tall imgs from spilling) */
+  background: var(--color-gray-9);        /* subtle bg while images load */
+}
+
+/* 4) fill the tile, crop nicely, and add a subtle hover */
+.proj__gallery img {
+  width: 100%;                            /* stretch to tile width */
+  height: 100%;                           /* stretch to tile height (NOT the image’s native height) */
+  object-fit: cover;                      /* crop to fill without distortion */
+  transform: scale(1);                    /* base transform for hover */
+  opacity: .95;                           /* slightly dim for contrast */
+  transition: transform .35s ease, opacity .35s ease; /* smooth hover motion */
+}
+
+.proj__gallery figure:hover img {
+  transform: scale(1.06);                 /* subtle zoom on hover */
+  opacity: 1;                             /* restore full brightness on hover */
+}
+
+/* 5) scale down on smaller screens */
+@media (max-width: 900px) {
+  :root { --proj-thumb-h: 150px; }        /* slightly shorter tiles on tablets */
+}
+@media (max-width: 600px) {
+  .proj__gallery { grid-template-columns: 1fr 1fr; } /* 2 columns on phones */
+  :root { --proj-thumb-h: 120px; }        /* shorter tiles on phones */
+}
+
+
+/* ===== Full-page screenshot mode (no cropping) ===== */
+
+/* Make "full" galleries show one image per row so each can be big */
+.proj__gallery.proj__gallery--full {               /* target only galleries you tagged */
+  display: grid;                                   /* ensure grid layout */
+  grid-template-columns: 1fr;                      /* one column — let each image span full column width */
+  gap: .9rem;                                      /* space between images */
+  margin: var(--vspace-0_5) 0 var(--vspace-0_75);  /* a bit of breathing room */
+}
+
+/* Each tile becomes a tall viewport frame so the whole phone page fits */
+.proj__gallery.proj__gallery--full figure {
+  height: 85vh;            /* almost full screen height; adjust to 100vh if you want literally full */
+  border-radius: 10px;     /* rounded corners */
+  overflow: hidden;        /* keep any minor overflow tidy */
+  background: var(--color-gray-9); /* pleasant loading background */
+}
+
+/* Show the ENTIRE image inside the frame, preserving aspect ratio */
+.proj__gallery.proj__gallery--full img {
+  width: 100%;             /* fill frame width */
+  height: 100%;            /* fill frame height */
+  object-fit: contain;     /* fit *entire* image inside without cropping */
+  object-position: center; /* center it if there’s letterboxing */
+  transition: transform .3s ease, opacity .3s ease; /* smooth hover */
+  opacity: .98;            /* tiny dim so hover feels nicer */
+}
+
+/* Gentle hover so users can focus */
+.proj__gallery.proj__gallery--full figure:hover img {
+  transform: scale(1.01);  /* barely zoom to signal interactivity */
+  opacity: 1;
+}
+
+/* Smaller screens: keep it comfy */
+@media (max-width: 600px) {
+  .proj__gallery.proj__gallery--full figure {
+    height: 75vh;          /* shorter so it doesn’t feel endless on phones */
+  }
+}
+
+
+/* === Project galleries === */
+.proj__gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+/* Card polish */
+.proj__gallery figure {
+  position: relative;
+  margin: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transition: transform .28s ease, box-shadow .28s ease;
+  will-change: transform;
+}
+.proj__gallery figure:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.12);
+}
+.proj__gallery img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover; /* crop gracefully */
+  /* A sensible default size—overridden per pattern for variety */
+  aspect-ratio: 4 / 3;
+}
+
+/* Pattern A: 2 on top, 1 full-width below */
+.proj__gallery--two-one figure:nth-child(1) { grid-column: 1; }
+.proj__gallery--two-one figure:nth-child(2) { grid-column: 2; }
+.proj__gallery--two-one figure:nth-child(3) { grid-column: 1 / -1; }
+
+/* Pattern B: 1 full-width on top, 2 below */
+.proj__gallery--one-two figure:nth-child(1) { grid-column: 1 / -1; }
+.proj__gallery--one-two figure:nth-child(2) { grid-column: 1; }
+.proj__gallery--one-two figure:nth-child(3) { grid-column: 2; }
+
+/* Add tasteful size diversity via aspect ratios */
+.proj__gallery--two-one figure:nth-child(1) img { aspect-ratio: 5 / 4; }
+.proj__gallery--two-one figure:nth-child(2) img { aspect-ratio: 1 / 1; }
+.proj__gallery--two-one figure:nth-child(3) img { aspect-ratio: 16 / 9; }
+
+.proj__gallery--one-two figure:nth-child(1) img { aspect-ratio: 21 / 9; }
+.proj__gallery--one-two figure:nth-child(2) img { aspect-ratio: 4 / 5; }
+.proj__gallery--one-two figure:nth-child(3) img { aspect-ratio: 4 / 5; }
+
+/* Mobile: stack nicely */
+@media (max-width: 640px) {
+  .proj__gallery { grid-template-columns: 1fr; }
+  .proj__gallery figure { grid-column: 1 !important; }
+  /* keep pleasant heights on mobile */
+  .proj__gallery img { aspect-ratio: 4 / 3; }
+}
+/* ===== No-crop variant: show the full image inside the frame ===== */
+.proj__gallery--contain figure {
+  /* keep the card look */
+  position: relative;
+  margin: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transition: transform .28s ease, box-shadow .28s ease;
+  background: rgba(255,255,255,0.04);  /* subtle letterbox bg on dark themes */
+  /* keep consistent tile heights while allowing full image inside */
+  aspect-ratio: 16 / 10;               /* tweak per taste (e.g., 4/3, 3/2) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;                         /* little gutter so edges don’t touch */
+}
+
+.proj__gallery--contain figure:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.12);
+}
+
+.proj__gallery--contain img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;                  /* ✅ show the whole page/image */
+  object-position: center;
+  border-radius: 10px;                  /* inner radius to match card */
+}
+
+/* If you previously set aspect-ratio per nth-child, neutralize it here */
+.proj__gallery--contain figure:nth-child(n) img { aspect-ratio: auto !important; }
+
+/* Mobile: still stack nicely */
+@media (max-width: 640px) {
+  .proj__gallery--contain figure { aspect-ratio: 4 / 3; }
+}
+
+/* ===== 3-image gallery ===== */
+.proj__gallery--three {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.proj__gallery--three figure {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.proj__gallery--three img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover; /* crops slightly to fill but keeps proportions */
+  transition: transform 0.4s ease;
+}
+
+/* Hover effect: subtle lift & zoom */
+.proj__gallery--three figure:hover {
+  box-shadow: 0 14px 36px rgba(0,0,0,0.12);
+}
+
+.proj__gallery--three figure:hover img {
+  transform: scale(1.08);
+}
+
+/* Mobile: stack images vertically */
+@media (max-width: 768px) {
+  .proj__gallery--three {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*  */
 
 
 
+/* 3-up gallery: bigger tiles, full image, no crop */
+.proj__gallery--three {
+  /* make each column wider so screenshots are larger */
+  /* grid-template-columns: repeat(3, minmax(, 1fr)); */
+  gap: 1rem;
+  display: grid;
+  height: 100%;
+}
 
+/* clean figures */
+.proj__gallery--three figure {
+  margin: 0;
+  overflow: hidden;       /* keeps the hover zoom tidy */
+  border-radius: 10px;    /* optional; remove if you want sharp corners */
+}
+
+/* show the WHOLE image, scale by width, keep aspect, no letterbox bg */
+.proj__gallery--three img {
+  display: block;
+  width: 100%;
+  height: auto !important;     /* override any previous fixed heights */
+  object-fit: unset !important;/* ensure no cropping overrides stick */
+  transform-origin: center;
+  transition: transform .35s ease;
+}
+
+/* hover zoom (doesn't shift layout) */
+.proj__gallery--three figure:hover img {
+  transform: scale(1.12);
+  /* tip: raise to 1.2 if you want a bit more pop */
+}
+
+/* responsive: keep them readable, then wrap to 2 → 1 columns */
+@media (max-width: 1100px) {
+  .proj__gallery--three {
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .proj__gallery--three {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Make images fill the full height of their containers */
+.proj__gallery--three figure {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  display: flex;                /* allow img to stretch */
+}
+
+.proj__gallery--three img {
+  width: 100%;
+  height: 100%;                  /* ✅ fill full height */
+  object-fit: contain;           /* show whole screenshot, no crop */
+  background-color: transparent; /* remove any grey fill */
+  transition: transform 0.35s ease;
+}
+
+/* Hover zoom */
+.proj__gallery--three figure:hover img {
+  transform: scale(1.12);
+}
+
+/* === 3-up gallery: taller, no crop, clean === */
+.proj__gallery--three {
+  --thumb-h: 280px;                 /* ⬅️ make it longer here (try 280–340) */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.proj__gallery--three figure {
+  margin: 0;
+  height: var(--thumb-h);           /* ✅ fixes the tile height (longer) */
+  overflow: hidden;                 /* keeps hover zoom tidy */
+  border-radius: 10px;              /* optional */
+  background: transparent !important;
+}
+
+.proj__gallery--three img {
+  width: 100%;
+  height: 100%;                     /* ✅ fill the taller tile */
+  object-fit: contain;              /* ✅ show the whole UI (no crop) */
+  object-position: center;
+  background: transparent !important;
+  max-height: none !important;      /* override any theme caps */
+  transition: transform .35s ease;
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* Hover zoom without shifting layout */
+.proj__gallery--three figure:hover img {
+  transform: scale(1.12);
+  /* bump to 1.2 if you want extra pop */
+}
+
+/* Responsive wrap */
+@media (max-width: 1100px) {
+  .proj__gallery--three { grid-template-columns: repeat(2, minmax(260px, 1fr)); }
+}
+@media (max-width: 700px) {
+  .proj__gallery--three { grid-template-columns: 1fr; --thumb-h: 320px; }
+}
+
+/* 3-up gallery: slimmer but tall tiles */
+.proj__gallery--three {
+  --thumb-h: 280px; /* height */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 1fr)); /* ⬅️ thinner min width */
+  gap: 1rem;
+}
+
+.proj__gallery--three figure {
+  margin: 0;
+  height: var(--thumb-h);
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.proj__gallery--three img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;  /* show full screenshot */
+  object-position: center;
+  transition: transform 0.35s ease;
+}
+
+.proj__gallery--three figure:hover img {
+  transform: scale(1.12);
+}
+
+/* Responsive: wrap to 2 then 1 column */
+@media (max-width: 1100px) {
+  .proj__gallery--three {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .proj__gallery--three {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Divider between the two project domains */
+.projects-split {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.projects-split > .column {
+  padding: 0 2rem;
+}
+
+/* Add the vertical divider line to the right of the first column */
+.projects-split > .column:first-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.1); /* match education section color */
+}
+
+/* On smaller screens, remove the divider */
+@media (max-width: 768px) {
+  .projects-split > .column:first-child {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+  }
+}
