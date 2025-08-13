@@ -4506,11 +4506,12 @@ body, p, li {
 }
 .proj__gallery img {
   width: 100%;
-  height: 100%;
   display: block;
-  object-fit: cover; /* crop gracefully */
   /* A sensible default size—overridden per pattern for variety */
   aspect-ratio: 4 / 3;
+  height: 300px;          /* increase this number for taller thumbnails */
+  width: auto;
+  object-fit: cover; 
 }
 
 /* Pattern A: 2 on top, 1 full-width below */
